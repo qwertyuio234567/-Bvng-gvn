@@ -1,0 +1,29 @@
+name: Build APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip project
+        run: unzip -q workspace-completed.zip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install NDK and CMake
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0" "cmake;3.22.1" "ndk;26.1.10909125"
+      - name: Build
+        working-directory: PianoHell
+        run: |
+          rm -f local.properties
+          chmod +x gradlew
+          ./gradlew clean assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PianoHell-debug-apk
+          path: PianoHell/app/build/outputs/apk/debug/app-debug.apk
