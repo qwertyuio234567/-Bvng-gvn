@@ -14,9 +14,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - name: Install NDK and CMake
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0" "cmake;3.22.1" "ndk;26.1.10909125"
+      - name: Install SDK components
+        run: |
+          SM=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          yes | $SM --licenses > /dev/null || true
+          $SM "platforms;android-34" "build-tools;34.0.0" "cmake;3.22.1" "ndk;26.1.10909125"
       - name: Build
         working-directory: PianoHell
         run: |
